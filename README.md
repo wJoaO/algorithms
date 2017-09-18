@@ -1,0 +1,1 @@
+Algoritmos usados em programação competitiva
