@@ -3,16 +3,17 @@
 using namespace std;
 
 struct Node {
-	int valor, key, size;
+	int valor, key, size, maior;
 	Node *l, *r;
 
-	Node(int _valor) : valor(_valor), key((rand() << 16) ^ rand()), size(1), l(NULL), r(NULL) {}
+	Node(int _valor) : valor(_valor), key((rand() << 16) ^ rand()), size(1), l(NULL), r(NULL), maior(_valor) {}
 	~Node() { delete l; delete r; }
 	
 	void recalc() {
 		size = 1;
-		if (l) size += l->size;
-		if (r) size += r->size;
+		maior = valor;
+		if (l) size += l->size, maior = max(maior, l->maior);
+		if (r) size += r->size, maior = max(maior, r->maior);
 	}
 };
 
@@ -33,6 +34,7 @@ struct Treap {
 		}
 	}
 
+	// Valores maiores ou iguais a "valor" ficarão no r, e os demais no l.
 	void split(Node * v, int valor, Node *& l, Node *& r) {
 		l = r = NULL;
 		if (!v) return;
@@ -69,6 +71,17 @@ struct Treap {
 		if( posicao-esquerda == 1 ) return v;
 		if( posicao-esquerda > 1 ) return kth(v->r, posicao-esquerda-1);
 		if( posicao-esquerda < 1 ) return kth(v->l, posicao);
+	}
+
+	// Sendo i e j os índices no array ordenado
+	// Talvez dê problemas de i e j estiverem fora do range.
+	int query(int i, int j){
+		Node *l, *q, *r;
+		split(root, kth(root, i+1)->valor, l, q);
+		split(q, kth(q, j+1-i)->valor+1, q, r);
+		int x = q->maior;
+		root = merge(l, merge(q,r));
+		return x;
 	}
 
 	Node * root;
