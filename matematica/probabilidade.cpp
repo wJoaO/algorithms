@@ -13,22 +13,20 @@ int power(int x, unsigned int y){
 	return (y%2 == 0)? p : (x * p) % mod;
 }
 
-
-
 int inversoMult(int a) {
 	return power(a, mod-2);
 }
 
-
-
 struct Prob{
-	int fat[maxfat];
+	int fat[maxfat]; // invfat[maxfat];
 	Prob(){
 		fat[1] = 1;
 		for(int i = 2; i < maxfat; i++ ) fat[i] = ( fat[i-1] * i ) % mod;
+		// invfat[i] = inversoMult(fat[i])
 	}
 
 	int arranjo(int n, int p){
+		// fat[n] * invfat[n-p]
 		return ( fat[n] * inversoMult( fat[n-p] ) ) % mod;
 	}
 
@@ -37,6 +35,7 @@ struct Prob{
 	}
 
 	int combinacao_normal(int n, int p){
+		// fat[n] * invfat[n-p]
 		return ( arranjo(n, p) * inversoMult( fat[p] ) ) % mod;
 	}
 
