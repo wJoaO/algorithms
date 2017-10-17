@@ -50,6 +50,25 @@ struct Treap {
 		v->recalc();
 	}
 
+	// Ficarão "quantidade" no l, e os demais no r.
+	void splitSmallest(Node * v, int quantidade, Node *& l, Node *& r) {
+		l = r = NULL;
+		if (!v) return;
+		
+		if (v->l && v->l->size >= quantidade) {
+			splitSmallest(v->l, quantidade, l, v->l);
+			r = v;
+		} else if( (v->l? v->l->size:0) + 1 == quantidade ){
+			r = v->r;
+			l = v;
+			v->r = NULL;
+		} else {
+			splitSmallest(v->r, quantidade - v->quantidade - (v->l? v->l->size: 0), v->r, r);
+			l = v;
+		}
+		v->recalc();
+	}
+
 	bool find(Node *v, int valor){
 		if(!v) return false;
 		if( v->valor == valor ) return true;
@@ -113,6 +132,37 @@ struct Treap {
 		split(m, valor + 1, m, r);
 		delete m;
 		root = merge(l, r);
+	}
+
+	// Quantos valores existem menor que "valor"
+	int menoresQue(int valor){
+		Node * l, * r;
+		split(root, valor, l, r);
+		int res = (l? l->size: 0);
+		root = merge(l,r);
+		return res;
+	}
+	// Retorna a consulta dos primeiros "quantidade" valor
+	int top(int quantidade){
+		Node * l, * r;
+		splitSmallest(root, quantidade, l, r);
+		int valor = (l?l->maior:0);
+		root = merge(l,r);
+		return valor;
+	}
+	// Remover os d menores
+	void removeSmallest(int d){ 
+		Node * l, * r;
+		splitSmallest(root, d, l, r);
+		root = r;
+		if( l ) delete l;
+	}
+	// Remover todos menos os d menores
+	void limit(int d){
+		Node * l, * r;
+		splitSmallest(root, d, l, r);
+		root = l;
+		if( r ) delete r;
 	}
 	int size() const { return root ? root->size : 0; }
 } treap;
