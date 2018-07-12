@@ -1,0 +1,1 @@
+https://csacademy.com/contest/ceoi-2017-day-1/tasks/
