@@ -32,3 +32,4 @@
 *.app
 
 working/
+.vscode/
